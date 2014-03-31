@@ -8,18 +8,15 @@ WebSocketServer = require('ws').Server;
 var RelayServer = function(options, swarm){
 	var self = this;
 	this._wss = new WebSocketServer(options, function(){
-		console.log(arguments);
+		console.log("Booted up the server.");
 	});
 	this._connections = {};
 
 	this._wss.on('connection', function(ws) {
-		// console.log(ws.readyState);
 		if(swarm){
-	    	// console.log(Object.keys(self._connections));
 	    	ws.send(JSON.stringify({peers: Object.keys(self._connections)}));
 	    }
 	    var id = url.parse(ws.upgradeReq.url, true).query.id;
-		console.log("registering ", id);
 		self._connections[id] = ws;
 		ws.on('close', function(){
 			self._connections[id] = null;
@@ -28,7 +25,6 @@ var RelayServer = function(options, swarm){
 	    ws.on('message', function(message) {
 	        try{
 	        	var data = JSON.parse(message);
-	        	console.log("to",data.to);
 	        	if(self._connections.hasOwnProperty(data.to)){
 	        		self._connections[data.to].send(message);
 	        	} else {

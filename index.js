@@ -2,7 +2,7 @@
 
 var url = require('url');
 
-WebSocketServer = require('ws').Server;
+var WebSocketServer = require('ws').Server;
 
 
 var RelayServer = function(options, swarm){

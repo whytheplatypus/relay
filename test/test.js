@@ -1,6 +1,6 @@
 var RelayServer = require('../');
 
-var relay = new RelayServer({port: 1337});
+var relay = new RelayServer({port: 1337}, true);
 console.log("listening on "+1337);
 var WebSocket = require('ws')
 
@@ -11,12 +11,19 @@ before(function(done2){
 	ws2 = new WebSocket('ws://localhost:1337/?id=world');
 	var both = 0;
 	ws.on('open', function() {
+
 	    both++;
 	    if(both > 1){
 	    	done2();
 	    }
 	});
 	ws2.on('open', function() {
+		ws2.on('message', function(message) {
+			message = JSON.parse(message);
+			if(message.peers !== undefined){
+				console.log(message.peers);
+			}
+		});
 		both++;
 	    if(both > 1){
 	    	done2();
@@ -28,8 +35,9 @@ describe('RelayServer', function(){
    	
 	var packet = {to: "world", message:"This is from hello!"};
 	ws2.on('message', function(message) {
-	    assert.equal(message, JSON.stringify(packet))
-	    done();
+		// console.log(message);
+    	assert.equal(message, JSON.stringify(packet))
+    	done();
 	});
 	
 	ws.send(JSON.stringify(packet));

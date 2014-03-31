@@ -13,6 +13,7 @@ var RelayServer = function(options, swarm){
 	this._connections = {};
 
 	this._wss.on('connection', function(ws) {
+		console.log("connecting");
 		if(swarm){
 	    	ws.send(JSON.stringify({peers: Object.keys(self._connections)}));
 	    }
